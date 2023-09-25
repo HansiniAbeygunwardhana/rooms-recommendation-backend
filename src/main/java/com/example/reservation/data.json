@@ -1,0 +1,15 @@
+{
+  "checkInDate": "2023-09-05",
+  "numberOfNights": 5,
+  "numberOfRooms": 1,
+  "rooms": [
+    {
+      "numberOfAdults": 2,
+      "numberOfRooms": 1
+    },
+    {
+      "numberOfAdults": 3,
+      "numberOfRooms": 2
+    }
+  ]
+}
