@@ -8,6 +8,8 @@ import com.example.reservation.exception.ResourceNotFoundException;
 import com.example.reservation.model.Contract;
 import com.example.reservation.model.Hotel;
 import com.example.reservation.services.HotelService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,8 @@ public class HotelController {
 
     private final HotelService hotelService;
 
+    private static  final Logger logger = LoggerFactory.getLogger(HotelController.class);
+
     public HotelController(HotelService hotelService) {
         this.hotelService = hotelService;
     }
@@ -30,9 +34,12 @@ public class HotelController {
     public List<HotelNameDTO> getAllHotelsWithoutAddress(){
         List<Hotel> hotels = hotelService.getAllHotels();
 
-        return hotels.stream()
+        List<HotelNameDTO> hotelNameDTOS = hotels.stream()
                 .map(this::convertToHotelDTO)
                 .collect(Collectors.toList());
+        logger.info("Getting hotel names list");
+        return hotelNameDTOS;
+
     }
 
     @PostMapping("/hotels")

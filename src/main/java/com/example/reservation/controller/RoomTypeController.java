@@ -9,6 +9,8 @@ import com.example.reservation.model.RoomType;
 import com.example.reservation.repository.ContractRepository;
 import com.example.reservation.repository.HotelRepository;
 import com.example.reservation.services.RoomTypeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class RoomTypeController {
 
+    private static final Logger logger = LoggerFactory.getLogger(RoomTypeController.class);
 
     private final RoomTypeService roomTypeService;
     private final HotelRepository hotelRepository;
@@ -54,7 +57,7 @@ public class RoomTypeController {
         roomType.setContract(contract);
 
         roomTypeService.addRoomType(roomType);
-
+        logger.info("Adding a new room types");
         return new ResponseEntity<>(new ApiResponse(true , "New roomType has been created"), HttpStatus.OK);
     }
 
@@ -66,12 +69,13 @@ public class RoomTypeController {
 
         List<RoomType> roomTypes = roomTypeService.getRoomTypesByContract(contract);
 
-
-
-        return roomTypes
+        List<RoomTypeDTO> roomTypeDTOS = roomTypes
                 .stream()
                 .map(this::convertToRoomTypeDTO)
-                .collect(Collectors.toList());
+                .toList();
+
+        logger.info("Getting rooms type by id : {}" , id);
+        return roomTypeDTOS;
     }
 
     @PutMapping("/rooms/{id}")
@@ -95,13 +99,17 @@ public class RoomTypeController {
 
     @GetMapping("/rooms/id{id}")
     public RoomType getRoomTypeById(@PathVariable Long id) {
-        return roomTypeService.getRoomTypeById(id);
+
+        RoomType roomType = roomTypeService.getRoomTypeById(id);
+        logger.info("Getting room type by id : {}" , id);
+        return roomType;
     }
 
     @DeleteMapping("/rooms/{id}")
     public ResponseEntity<ApiResponse> deleteRoomById(@PathVariable Long id){
         try {
             this.roomTypeService.deleteRoomTypeById(id);
+            logger.info("Deleting room type with id : {}" , id);
             return new ResponseEntity<>(new ApiResponse(true , "Room Type Has Been Deleted"), HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();

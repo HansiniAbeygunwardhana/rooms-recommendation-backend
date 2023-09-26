@@ -29,7 +29,7 @@ public class ContractService {
     }
 
     public List<Contract> getContractsByHotelId(Long hotelId){
-        return this.contractRepository.findByHotelId(hotelId);
+        return this.contractRepository.findByHotelIdOrderByEndingDateDesc(hotelId);
     }
 
 

@@ -13,5 +13,5 @@ public interface ContractRepository extends JpaRepository<Contract , Long> {
     List<Contract> findByStartingDateLessThanEqualAndEndingDateGreaterThanEqualAndRoomTypesIsNotEmpty(
             Date startingDate, Date endingDate);
 
-    List<Contract> findByHotelId (Long hotelId);
+    List<Contract> findByHotelIdOrderByEndingDateDesc (Long hotelId);
 }
