@@ -8,6 +8,8 @@ import com.example.reservation.model.Hotel;
 import com.example.reservation.repository.HotelRepository;
 import com.example.reservation.services.ContractService;
 import com.example.reservation.services.HotelService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class ContractController {
+
+    private  static final Logger logger = LoggerFactory.getLogger(ContractController.class);
+
 
     private final ContractService contractService;
 
@@ -35,26 +40,29 @@ public class ContractController {
 
         Contract contract = new Contract();
         contract.setEndingDate(contractDTO.getEndingDate());
-        contract.setStartingDate(contractDTO.getEndingDate());
+        contract.setStartingDate(contractDTO.getStartingDate());
 
         Hotel hotel = hotelRepository.findById(contractDTO.getHotelId())
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with id" + contractDTO.getHotelId()));
         contract.setHotel(hotel);
 
         contractService.addContract(contract);
-
+        logger.info("Adding new contract");
         return new ResponseEntity<>(new ApiResponse(true , "A New Contract Added") , HttpStatus.CREATED);
     }
 
     @GetMapping("/contract")
     public List<Contract> getAllContracts(Contract contract){
-       return this.contractService.getAllContracts();
+        List<Contract> contracts = this.contractService.getAllContracts();
+        logger.info("Getting all contracts");
+       return contracts;
     }
 
     @DeleteMapping("/contract/{id}")
     public ResponseEntity<ApiResponse> deleteById(@PathVariable Long id){
         try {
             this.contractService.deleteContractById(id);
+            logger.info("Deleting contract with ID: {}" , id);
             return new ResponseEntity<>(new ApiResponse(true,"Contract Successfully Deleted"),HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
@@ -66,9 +74,13 @@ public class ContractController {
     public List<ContractDTO> getByHotelId(@PathVariable Long id){
 
         List<Contract> contractList = this.contractService.getContractsByHotelId(id);
-            return contractList.stream()
-                    .map(this::convertToContractDTO)
-                    .collect(Collectors.toList());
+
+        List<ContractDTO> contractDTOS = contractList.stream()
+                .map(this::convertToContractDTO)
+                .toList();
+
+        logger.info("Getting rooms type by hotel Id : {}" , id);
+            return contractDTOS;
     }
 
     @GetMapping("/contract/{id}")
@@ -76,7 +88,9 @@ public class ContractController {
 
         Contract contract = this.contractService.getById(id);
 
-        return convertToContractDTO(contract);
+        ContractDTO contractDTO = convertToContractDTO(contract);
+        logger.info("Getting rooms type by contract Id : {}" , id );
+        return contractDTO ;
     }
 
     @PutMapping("/contract/{id}")
@@ -98,11 +112,12 @@ public class ContractController {
             existingContract.setHotel(hotel);
 
             contractService.updateContract(existingContract);
-
+            logger.info("Updating contract details");
             return new ResponseEntity<>(new ApiResponse(true, "Contract Updated Successfully"), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(new ApiResponse(false, e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            logger.info(String.valueOf(e));
             e.printStackTrace();
             return new ResponseEntity<>(new ApiResponse(false, "An Error Occurred"), HttpStatus.BAD_REQUEST);
         }

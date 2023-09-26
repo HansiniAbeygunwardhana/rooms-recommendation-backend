@@ -17,6 +17,7 @@ public class Contract {
 
     private Date endingDate;
     private Date startingDate;
+    private Boolean isExpired = false;
 
     @ManyToOne
     @JsonIgnore
@@ -24,4 +25,13 @@ public class Contract {
 
     @OneToMany(mappedBy = "contract" , cascade = CascadeType.ALL)
     private List<RoomType> roomTypes;
+
+    @PreUpdate
+    public void preUpdate(){
+
+        Date currentDate = new Date();
+        if (endingDate!= null && endingDate.after(currentDate)){
+            isExpired = true;
+        }
+    }
 }
