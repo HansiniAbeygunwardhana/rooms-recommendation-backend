@@ -3,11 +3,13 @@ package com.example.reservation.services;
 import com.example.reservation.exception.ResourceNotFoundException;
 import com.example.reservation.model.Contract;
 import com.example.reservation.repository.ContractRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service///////
 public class ContractService {
 
     private final ContractRepository contractRepository;
@@ -20,6 +22,10 @@ public class ContractService {
         return this.contractRepository.findAll();
     }
 
+    public Page<Contract> getAllContracts(Pageable pageable){
+        return this.contractRepository.findAll(pageable);
+    }
+
     public void addContract(Contract contract){
         this.contractRepository.save(contract);
     }
@@ -30,6 +36,10 @@ public class ContractService {
 
     public List<Contract> getContractsByHotelId(Long hotelId){
         return this.contractRepository.findByHotelIdOrderByEndingDateDesc(hotelId);
+    }
+
+    public Page<Contract> getContractbyPage( Long hotelId , Pageable pageable){
+        return this.contractRepository.findByHotelIdOrderByEndingDateDesc(hotelId , pageable);
     }
 
 

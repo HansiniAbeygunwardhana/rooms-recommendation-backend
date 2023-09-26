@@ -10,6 +10,9 @@ import com.example.reservation.services.ContractService;
 import com.example.reservation.services.HotelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +61,7 @@ public class ContractController {
        return contracts;
     }
 
+
     @DeleteMapping("/contract/{id}")
     public ResponseEntity<ApiResponse> deleteById(@PathVariable Long id){
         try {
@@ -81,6 +85,20 @@ public class ContractController {
 
         logger.info("Getting rooms type by hotel Id : {}" , id);
             return contractDTOS;
+    }
+
+    @GetMapping("/contract/hotel{id}/page")
+    public Page<ContractDTO> getContractByPage(@PathVariable Long id , Pageable pageable){
+
+        Page<Contract> contract = contractService.getContractbyPage(id , pageable);
+
+        List<ContractDTO> contractDTOList = contract
+                .getContent()
+                .stream()
+                .map(this::convertToContractDTO)
+                .collect(Collectors.toList());
+
+        return new  PageImpl<>(contractDTOList , pageable , contract.getTotalElements());
     }
 
     @GetMapping("/contract/{id}")
