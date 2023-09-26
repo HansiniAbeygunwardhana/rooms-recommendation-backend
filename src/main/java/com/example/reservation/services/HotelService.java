@@ -3,6 +3,8 @@ package com.example.reservation.services;
 import com.example.reservation.exception.ResourceNotFoundException;
 import com.example.reservation.model.Hotel;
 import com.example.reservation.repository.HotelRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,5 +37,13 @@ public class HotelService {
 
     public void updateHotel (Hotel hotel){
         hotelRepository.save(hotel);
+    }
+
+    public Page<Hotel> getAllHotelsWithoutAddressWithPagination(Pageable pageable) {
+        return hotelRepository.findAll(pageable);
+    }
+
+    public Page<Hotel> getAllHotels(Pageable pageable) {
+        return hotelRepository.findAll(pageable);
     }
 }
