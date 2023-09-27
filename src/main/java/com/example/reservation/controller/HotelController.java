@@ -10,6 +10,10 @@ import com.example.reservation.model.Hotel;
 import com.example.reservation.services.HotelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,8 +43,20 @@ public class HotelController {
                 .collect(Collectors.toList());
         logger.info("Getting hotel names list");
         return hotelNameDTOS;
-
     }
+
+    @GetMapping("/hotels/page")
+    public Page<HotelNameDTO> getAllHotelsAsDTO(Pageable pageable) {
+        Page<Hotel> hotelsPage = hotelService.getAllHotels(pageable);
+        List<HotelNameDTO> hotelDTOList = hotelsPage
+                .getContent()
+                .stream()
+                .map(this::convertToHotelDTO)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(hotelDTOList, pageable, hotelsPage.getTotalElements());
+    }
+
 
     @PostMapping("/hotels")
     public ResponseEntity<ApiResponse> addHotel(@RequestBody Hotel hotel){

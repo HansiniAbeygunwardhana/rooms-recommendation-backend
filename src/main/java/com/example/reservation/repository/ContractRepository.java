@@ -1,6 +1,8 @@
 package com.example.reservation.repository;
 
 import com.example.reservation.model.Contract;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +15,8 @@ public interface ContractRepository extends JpaRepository<Contract , Long> {
     List<Contract> findByStartingDateLessThanEqualAndEndingDateGreaterThanEqualAndRoomTypesIsNotEmpty(
             Date startingDate, Date endingDate);
 
-    List<Contract> findByHotelIdOrderByEndingDateDesc (Long hotelId);
+    List<Contract> findByHotelIdOrderByEndingDateDesc (Long hotelId );
+
+    Page<Contract> findByHotelIdOrderByEndingDateDesc(Long hotelId, Pageable pageable);
+
 }

@@ -6,8 +6,6 @@ import com.example.reservation.model.RoomType;
 import com.example.reservation.repository.ContractRepository;
 import com.example.reservation.repository.HotelRepository;
 import com.example.reservation.repository.RoomTypeRepository;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -17,12 +15,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
-public class BookingController {
+public class SearchController {
 
     private final HotelRepository hotelRepository;
     private final RoomTypeRepository roomTypeRepository;
     private final ContractRepository contractRepository;
-    public BookingController(
+    public SearchController(
             HotelRepository hotelRepository,
             RoomTypeRepository roomTypeRepository,
             ContractRepository contractRepository
@@ -33,10 +31,10 @@ public class BookingController {
     }
 
     @PostMapping("search")
-    public List<TestingDTO> showRecommendations(@RequestBody BookingDTO bookingDTO){
+    public List<SearchDTO> showRecommendations(@RequestBody BookingDTO bookingDTO){
 
         RoomRecommendationsDTO roomRecommendations = new RoomRecommendationsDTO();
-        List<TestingDTO> testings = new ArrayList<>();
+        List<SearchDTO> testings = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(bookingDTO.getCheckInDate());
         calendar.add(Calendar.DAY_OF_MONTH , bookingDTO.getNumberOfNights());
@@ -45,7 +43,7 @@ public class BookingController {
         List<Contract> contracts = contractRepository.findByStartingDateLessThanEqualAndEndingDateGreaterThanEqualAndRoomTypesIsNotEmpty(bookingDTO.getCheckInDate() , checkOutDate);
 
         for (Contract contract:contracts) {
-            TestingDTO testingDTO = new TestingDTO();
+            SearchDTO testingDTO = new SearchDTO();
             List<BasicRoomTypeDTO> basicRoomTypeDTOS  = findSuitableRoomTypes(bookingDTO.getRooms() , contract);
             testingDTO.setBasicRoomTypes(basicRoomTypeDTOS);
             testingDTO.setContractId(contract.getId());
